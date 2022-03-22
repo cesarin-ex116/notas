@@ -37,6 +37,10 @@
                         
                     </form>
 
+                    <br><br><br><br>
+
+                    <button @click.prevent="eliminar()" class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Eliminar registro</button>
+
                 </div>
             </div>
         </div>
@@ -64,8 +68,12 @@
         },
         methods: {
             update() {
-                
                 this.$inertia.put(this.route('noticias.update', this.nota.id), this.form)
+            },
+            eliminar(){
+                if( confirm('¿Estas seguro de eliminar este registro?') ){
+                    this.$inertia.delete(this.route('noticias.destroy', this.nota.id))
+                }
             }
         }
     })
