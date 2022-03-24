@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\http\Controllers\NotaController;
+use App\Http\Controllers\NotaController;
 
 /*
 |--------------------------------------------------------------------------
