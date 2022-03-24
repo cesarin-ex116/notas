@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Nota;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Auth;
 
 class NotaController extends Controller
 {
@@ -15,12 +16,15 @@ class NotaController extends Controller
      */
     public function index()
     {
-    
-       $notas = Nota::get(); 
+            //select * from notas
+            //select * from notas where users_id = Auth::id();
 
-       return Inertia::render('Notas/Index',[
-           'notas' => $notas
-       ]); 
+        //$notas = Nota::get();
+        $notas = Nota::where('users_id',Auth::id())->get();
+
+        return Inertia::render('Notas/Index', [
+            'notas' => $notas
+        ]);
     }
 
     /**
@@ -30,7 +34,7 @@ class NotaController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Notas/Create');
+       return Inertia::render('Notas/Create');
     }
 
     /**
@@ -41,16 +45,22 @@ class NotaController extends Controller
      */
     public function store(Request $request)
     {
-        
-        $request->validate([
-            'titulo' => 'required',
-            'contenido' => 'required',
-        ]);
-      
-         Nota::create($request->all());
-  
-         return redirect()->route('noticias.index');
-  
+    
+      $request->validate([
+          'titulo' => 'required',
+          'contenido' => 'required',
+      ]);
+    
+      // Nota::create($request->all()); //tambien almacenar el id del usuairo autetnticado
+        //ORM = MAPEANDO LA BASES DE DATOS (TABLA nota con la clase Nota)
+      $nota = new Nota;
+      $nota->titulo = $request->titulo;
+      $nota->contenido = $request->contenido;
+      $nota->users_id = Auth::id(); //id del usuario que este conectao
+      $nota->save();
+
+       return redirect()->route('noticias.index')->with('status','se ha creado una noiticia');;
+
     }
 
     /**
@@ -60,12 +70,21 @@ class NotaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    { 
-        $nota = Nota::findOrFail($id);
+    {
+        //where('users_id',Auth::id())->get();
 
-        return Inertia::render('Notas/Show',[
+        //$nota =  Nota::findOrFail($id);
+        //select * from notas where id = $id and users_id =Auth::id()
+
+        $nota =  Nota::where('id',$id)->where('users_id',Auth::id())->first();
+
+        // if($nota){ //no se encontro
+        //     Auth::logout();
+        // }
+        
+        return Inertia::render('Notas/Show', [
             'nota' => $nota
-        ]); 
+        ]);
     }
 
     /**
@@ -77,9 +96,11 @@ class NotaController extends Controller
     public function edit($id)
     {
 
+        $nota =  Nota::where('id',$id)->where('users_id',Auth::id())->first();
+
         return Inertia::render('Notas/Edit', [
-            'nota' => Nota::findOrFail($id)
-        ]); 
+            'nota' =>  $nota
+        ]);
     }
 
     /**
@@ -91,16 +112,16 @@ class NotaController extends Controller
      */
     public function update(Request $request, $id)
     {
-
         $request->validate([
-            'titulo' => 'required',
-            'contenido' => 'required',
+          'titulo' => 'required',
+          'contenido' => 'required',
         ]);
 
-        $nota = Nota::findOrFail($id);
-
+        $nota =  Nota::where('id',$id)->where('users_id',Auth::id())->first();
+        
         $nota->update($request->all());
         return redirect()->route('noticias.index')->with('status','La noticia se ha actualizado');
+
     }
 
     /**
@@ -111,10 +132,10 @@ class NotaController extends Controller
      */
     public function destroy($id)
     {
-        $nota = Nota::findOrFail($id);
+        $nota =  Nota::where('id',$id)->where('users_id',Auth::id())->first();
 
         $nota->delete();
-        return redirect()->route('noticias.index');
-
+        return redirect()->route('noticias.index')->with('status','La noticia se ha eliminado');;
+        
     }
 }
