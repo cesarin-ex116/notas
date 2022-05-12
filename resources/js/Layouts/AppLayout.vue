@@ -23,7 +23,10 @@
                                     Dashboard
                                 </jet-nav-link>
                                 <jet-nav-link :href="route('noticias.index')" :active="route().current('noticias.*')">
-                                    noticias
+                                    Noticias
+                                </jet-nav-link>
+                                <jet-nav-link :href="route('categorias.index')" :active="route().current('categorias.*')">
+                                    Categorías
                                 </jet-nav-link>
                             </div>
                         </div>
@@ -229,7 +232,7 @@
             <!-- Page Content -->
             <main>
 
-            <div v-if="$page.props.flash.status" class="bg-blue-500 text-white text-sm font-bold p-4">
+                <div v-if="$page.props.flash.status" class="bg-blue-500 text-white text-sm font-bold p-4">
                     <p>
                         {{ $page.props.flash.status }}
                     </p>
@@ -250,12 +253,10 @@
     import JetNavLink from '@/Jetstream/NavLink.vue'
     import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink.vue'
     import { Head, Link } from '@inertiajs/inertia-vue3';
-
     export default defineComponent({
         props: {
             title: String,
         },
-
         components: {
             Head,
             JetApplicationMark,
@@ -266,13 +267,11 @@
             JetResponsiveNavLink,
             Link,
         },
-
         data() {
             return {
                 showingNavigationDropdown: false,
             }
         },
-
         methods: {
             switchToTeam(team) {
                 this.$inertia.put(route('current-team.update'), {
@@ -281,7 +280,6 @@
                     preserveState: false
                 })
             },
-
             logout() {
                 this.$inertia.post(route('logout'));
             },
